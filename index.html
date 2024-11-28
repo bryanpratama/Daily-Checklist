@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist Web</title>
+</head>
+<body>
+  <h1>Checklist dan Workout</h1>
+
+  <input type="file" id="fileUpload" accept=".json">
+  <button onclick="loadData()">Upload JSON</button>
+
+  <div id="checklist"></div>
+  <div id="workouts"></div>
+  <div id="alternateWorkouts"></div>
+
+  <script>
+    // Cek apakah ada data di localStorage
+    if(localStorage.getItem("tasksData")) {
+      displayData(JSON.parse(localStorage.getItem("tasksData")));
+    }
+
+    // Fungsi untuk membaca file JSON yang di-upload
+    function loadData() {
+      const fileInput = document.getElementById("fileUpload");
+      const file = fileInput.files[0];
+      if (file && file.type === "application/json") {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const data = JSON.parse(event.target.result);
+          localStorage.setItem("tasksData", JSON.stringify(data)); // Simpan ke localStorage
+          displayData(data);
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Please upload a valid JSON file.");
+      }
+    }
+
+    // Fungsi untuk menampilkan data
+    function displayData(data) {
+      const checklistDiv = document.getElementById("checklist");
+      const workoutsDiv = document.getElementById("workouts");
+      const alternateWorkoutsDiv = document.getElementById("alternateWorkouts");
+
+      // Menampilkan tasks
+      checklistDiv.innerHTML = "<h2>Tasks</h2>";
+      data.tasks.forEach(task => {
+        const taskDiv = document.createElement("div");
+        taskDiv.textContent = task.name;
+        checklistDiv.appendChild(taskDiv);
+      });
+
+      // Menampilkan workouts
+      workoutsDiv.innerHTML = "<h2>Workouts</h2>";
+      data.workouts.forEach(workout => {
+        const workoutDiv = document.createElement("div");
+        workoutDiv.textContent = `${workout.name}: ${workout.reps} (${workout.sets} sets)`;
+        workoutsDiv.appendChild(workoutDiv);
+      });
+
+      // Menampilkan alternate workouts
+      alternateWorkoutsDiv.innerHTML = "<h2>Alternate Workouts</h2>";
+      data.alternateWorkouts.forEach(workout => {
+        const workoutDiv = document.createElement("div");
+        workoutDiv.textContent = `${workout.name}: ${workout.reps} (${workout.sets} sets)`;
+        alternateWorkoutsDiv.appendChild(workoutDiv);
+      });
+    }
+  </script>
+</body>
+</html>
